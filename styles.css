@@ -103,11 +103,12 @@ ul {
 }
 
 .price {
-	font-size: 1.6vw;
+	font-size: 2rem;
 	background-color: #ddd;
 	font-weight: bold;
 	padding: 1rem 1rem;
-	margin: 1rem 0;
+	margin-top: 2rem;
+	margin-bottom: 1rem;
 	border-radius: 5px;
 }
 
@@ -173,38 +174,81 @@ ul {
 	transform: rotate(-90deg);
 }
 
-/* custom scrollbar for carousel-box */
+/* custom scrollbar */
 
-.carousel-box::-webkit-scrollbar {
+::-webkit-scrollbar {
 	width: 4px;
 	height: 4px;
 }
-.carousel-box::-webkit-scrollbar-button {
+::-webkit-scrollbar-button {
 	width: 0px;
 	height: 0px;
 }
-.carousel-box::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
 	background: #999;
 	border: 0px none #ffffff;
 	border-radius: 50px;
 }
-.carousel-box::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover {
 	background: #ffffff;
 }
-.carousel-box::-webkit-scrollbar-thumb:active {
+::-webkit-scrollbar-thumb:active {
 	background: #000000;
 }
-.carousel-box::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
 	background: #666666;
 	border: 0px none #ffffff;
 	border-radius: 50px;
 }
-.carousel-box::-webkit-scrollbar-track:hover {
+::-webkit-scrollbar-track:hover {
 	background: #666666;
 }
-.carousel-box::-webkit-scrollbar-track:active {
+::-webkit-scrollbar-track:active {
 	background: #333333;
 }
-.carousel-box::-webkit-scrollbar-corner {
+::-webkit-scrollbar-corner {
 	background: transparent;
+}
+
+/* TABLET AND MOBILE  */
+@media (max-width: 768px) {
+	html {
+		font-size: 57%;
+	}
+	.half-circle {
+		display: none;
+	}
+	.card {
+		min-width: 21rem;
+		margin-top: 2rem;
+	}
+	.price {
+		font-size: 1.8rem;
+	}
+
+	.wrapper {
+		flex-direction: column;
+	}
+	.sidebar {
+	}
+
+	.sidebar-list {
+		display: flex;
+		width: 100%;
+		flex-wrap: nowrap;
+		overflow-x: scroll;
+	}
+
+	.sidebar-list-item {
+		white-space: nowrap;
+	}
+
+	.sidebar-list-item.active {
+		background-color: transparent;
+		border-bottom: 2px solid #007bff;
+		border-radius: 0;
+	}
+	.sidebar-list-item.active::after {
+		display: none;
+	}
 }
