@@ -1,17 +1,19 @@
 const sliders = document.querySelector('.carousel-box');
 
-const sidebarItems = Array.from(
-	document.querySelectorAll('.sidebar-list-item')
-);
+const sidebarUl = document.querySelector('.sidebar-list');
 const title = document.querySelector('.title');
 
-sidebarItems.forEach((item) => {
-	item.addEventListener('click', (e) => {
-		sidebarItems.forEach((i) => i.classList.remove('active'));
-		e.target.classList.add('active');
-		title.textContent = e.target.textContent;
-	});
+const notificationModal = document.querySelector('.notification-box');
+const notificationModalCloseBtn = document.querySelector('.close-btn');
+
+notificationModalCloseBtn.addEventListener('click', () => {
+	notificationModal.style.transform = 'translateY(10rem)';
+	notificationModal.style.opacity = '0';
 });
+
+let products = [];
+let categories = [];
+let currentCategory;
 
 /* Making slider arrows work */
 
@@ -32,16 +34,12 @@ function sliderScrollLeft() {
 }
 
 function sliderScrollRight() {
-	console.log(scrollAmount, sliders.scrollWidth - sliders.clientWidth);
-	console.log(sliders.clientWidth);
 	if (scrollAmount <= sliders.scrollWidth - sliders.clientWidth) {
-		console.log('yes');
 		sliders.scrollTo({
 			top: 0,
 			left: (scrollAmount += scrollPerClick),
 			behavior: 'smooth',
 		});
-		console.log(scrollAmount);
 	}
 }
 
@@ -72,7 +70,109 @@ sliders.addEventListener('mousemove', (e) => {
 	sliders.scrollLeft = scrollLeft - walk;
 });
 
+// fetching categories from product-list.json
+(async () => {
+	const res = await fetch('product-list.json');
+	const data = await res.json();
+	const userCategories = data.responses[0][0].params.userCategories;
+
+	userCategories.forEach((category, i) => {
+		let formattedCategory = category;
+		if (category.includes('>')) {
+			formattedCategory = category.split('>')[1];
+		}
+		categories.push({ originalCategoryName: category, formattedCategory });
+
+		sidebarUl.insertAdjacentHTML(
+			'beforeend',
+			`<li class="sidebar-list-item ${i === 0 ? 'active' : ''}">${
+				formattedCategory ? formattedCategory : category
+			}</li>
+			`
+		);
+
+		const sidebarItems = Array.from(
+			document.querySelectorAll('.sidebar-list-item')
+		);
+
+		// onclick to sidebar-item, add active class and change the textContent of title
+		sidebarItems.forEach((item, index) => {
+			item.addEventListener('click', (e) => {
+				if (!item.classList.contains('active')) {
+					sliders.innerHTML = `<div
+					class="half-circle half-circle-left"
+					onclick="sliderScrollLeft()"
+				>
+					<span><i class="fa-solid fa-chevron-left arrow"></i></span>
+				</div>
+				<div
+					class="half-circle half-circle-right"
+					onclick="sliderScrollRight()"
+				>
+					<span><i class="fa-solid fa-chevron-right arrow"></i></span>
+				</div>`;
+					currentCategory = index;
+					fetchProducts(index);
+				}
+
+				sidebarItems.forEach((i) => i.classList.remove('active'));
+				e.target.classList.add('active');
+				title.textContent = e.target.textContent;
+			});
+		});
+	});
+	title.textContent = categories[0].formattedCategory;
+})();
+
 // fetching products from product-list.json
-fetch('product-list.json')
-	.then((res) => res.json())
-	.then((data) => console.log(data.responses[0][0].params.recommendedProducts));
+const fetchProducts = async (current = 0) => {
+	try {
+		const res = await fetch('product-list.json');
+		const data = await res.json();
+		products =
+			data.responses[0][0].params.recommendedProducts[
+				categories[current].originalCategoryName
+			];
+
+		products.map((product, index) => {
+			sliders.insertAdjacentHTML(
+				'beforeend',
+				`<div class="card">
+				<img
+					src=${product.image}
+					alt=""
+				/>
+
+				<h2 class="desc">
+					${product.name.length > 50 ? product.name.slice(0, 51) + '...' : product.name}
+				</h2>
+				<p class="price">${product.priceText}</p>
+				${
+					product.params.shippingFee === 'FREE'
+						? '<div class="cargo"><i class="fa-solid fa-truck" style="color: green"></i><p> Ücretsiz Kargo</p></div>'
+						: ''
+				}
+				<button class="add-to-basket">Sepete Ekle</button>
+			</div>`
+			);
+		});
+
+		const buttons = Array.from(document.querySelectorAll('.add-to-basket'));
+
+		buttons.forEach((button) => {
+			button.addEventListener('click', () => {
+				notificationModal.style.transform = 'translateY(0)';
+				notificationModal.style.opacity = '1';
+
+				setTimeout(() => {
+					notificationModal.style.transform = 'translateY(10rem)';
+					// notificationModal.style.opacity = '0';
+				}, 6000);
+			});
+		});
+	} catch (err) {
+		console.log(err);
+	}
+};
+
+fetchProducts();

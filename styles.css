@@ -14,6 +14,7 @@ html {
 
 body {
 	font-family: 'Roboto', sans-serif;
+	overflow-y: hidden;
 }
 
 a {
@@ -79,7 +80,7 @@ ul {
 	display: flex;
 	align-items: center;
 	overflow-x: scroll;
-	padding: 0 2rem;
+	padding: 1rem 2rem;
 }
 
 .card {
@@ -147,6 +148,9 @@ ul {
 	align-items: center;
 	justify-content: center;
 	cursor: pointer;
+	z-index: 1;
+	background-color: #fff;
+	color: gray;
 }
 
 .half-circle-left span {
@@ -170,8 +174,53 @@ ul {
 .half-circle-right {
 	position: absolute;
 	top: 10rem;
-	right: 0.2rem;
+	right: -2rem;
 	transform: rotate(-90deg);
+}
+
+/* Notification box */
+.notification-box {
+	display: flex;
+	align-items: center;
+	padding: 1rem 2rem;
+	border-radius: 5px;
+	background-color: #333;
+	max-width: 25rem;
+	margin: 0 auto;
+	margin-top: 5rem;
+	color: white;
+	position: absolute;
+	bottom: 1rem;
+	left: 0;
+	right: 0;
+	margin: auto;
+	transform: translateY(10rem);
+	transition: 0.5s ease;
+	opacity: 0;
+}
+
+.left i {
+	color: #4eb467;
+}
+
+.center {
+	flex: 1;
+	margin: 0 1rem;
+}
+
+.center p {
+	font-size: 1.3rem;
+	margin-bottom: 0.2rem;
+}
+
+.center .checkout {
+	color: #95a3ce;
+	font-weight: 500;
+	cursor: pointer;
+	font-size: 1.2rem;
+}
+.right i {
+	cursor: pointer;
 }
 
 /* custom scrollbar */
