@@ -1,22 +1,15 @@
 const sliders = document.querySelector('.carousel-box');
-
 const sidebarUl = document.querySelector('.sidebar-list');
 const title = document.querySelector('.title');
-
 const notificationModal = document.querySelector('.notification-box');
 const notificationModalCloseBtn = document.querySelector('.close-btn');
-
-notificationModalCloseBtn.addEventListener('click', () => {
-	notificationModal.style.transform = 'translateY(10rem)';
-	notificationModal.style.opacity = '0';
-});
+let images;
 
 let products = [];
 let categories = [];
 let currentCategory;
 
 /* Making slider arrows work */
-
 let scrollPerClick = 400;
 let imagePadding = 20;
 let scrollAmount = 0;
@@ -68,6 +61,12 @@ sliders.addEventListener('mousemove', (e) => {
 	const x = e.pageX - sliders.offsetLeft;
 	const walk = (x - startX) * 2; // the bigger multiplication the faster scroll
 	sliders.scrollLeft = scrollLeft - walk;
+});
+
+// notificationModal onclick close
+notificationModalCloseBtn.addEventListener('click', () => {
+	notificationModal.style.transform = 'translateY(10rem)';
+	notificationModal.style.opacity = '0';
 });
 
 // fetching categories from product-list.json
@@ -139,7 +138,8 @@ const fetchProducts = async (current = 0) => {
 				'beforeend',
 				`<div class="card">
 				<img
-					src=${product.image}
+					
+					data-src=${product.image}
 					alt=""
 				/>
 
@@ -159,6 +159,13 @@ const fetchProducts = async (current = 0) => {
 
 		const buttons = Array.from(document.querySelectorAll('.add-to-basket'));
 
+		// lazy loading the images
+		images = document.querySelectorAll('[data-src]');
+		images.forEach((image) => {
+			imgObserver.observe(image);
+		});
+		//
+
 		buttons.forEach((button) => {
 			button.addEventListener('click', () => {
 				notificationModal.style.transform = 'translateY(0)';
@@ -166,7 +173,7 @@ const fetchProducts = async (current = 0) => {
 
 				setTimeout(() => {
 					notificationModal.style.transform = 'translateY(10rem)';
-					// notificationModal.style.opacity = '0';
+					notificationModal.style.opacity = '0';
 				}, 6000);
 			});
 		});
@@ -176,3 +183,18 @@ const fetchProducts = async (current = 0) => {
 };
 
 fetchProducts();
+
+const imgOptions = { threshold: 0, rootMargin: '0px 0px 300px 0px' };
+const imgObserver = new IntersectionObserver((entries, imgObserver) => {
+	entries.forEach((entry) => {
+		if (!entry.isIntersecting) return;
+		preloadImg(entry.target);
+		imgObserver.unobserve(entry.target);
+	});
+}, imgOptions);
+
+const preloadImg = (img) => {
+	const src = img.getAttribute('data-src');
+	if (!src) return;
+	img.src = src;
+};
